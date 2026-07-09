@@ -215,6 +215,7 @@
     color: #78350f;
     line-height: 1.7;
   }
+  .short-answer:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
   .feedback .correct-answer-text {
     display: inline-block;
     background: #e0f2fe;
@@ -546,7 +547,70 @@ const papers = [
         {"stem":"数据表字段和对象属性名称不一致时，可以使用<resultMap>元素进行映射处理。","ans":true,"exp":"<resultMap>用于自定义字段与属性的映射关系，解决名称不一致和复杂映射。"}
       ]},
     ]
+  },
+  { subject: "SpringBoot", title: "SpringBoot期末",
+    sections: [
+      { type: "单选", scoreEach: 5, label: "一、单选题（共21题，105分）", questions: [
+        {"stem":"更改Springboot的端口为8081，配置正确的是：","opts":["spring.port=8081","server.port=8081","springboot.port=8081","session.port=8081"],"ans":1,"exp":"Spring Boot 使用 server.port 来配置端口，这是内嵌 Tomcat 的标准配置属性。"},
+        {"stem":"Spring MVC中接收json格式数据使用的注解是（ ）","opts":["@RequestBody","@ResponseBody","@PathVariable","@Controller"],"ans":0,"exp":"@RequestBody 将请求体中的 JSON 反序列化为 Java 对象。@ResponseBody 是用于返回值序列化。"},
+        {"stem":"Spring MVC中能正确接收到集合类型参数的是","opts":["@RequestParam","@Parameter","@ResponseBody","@Default"],"ans":0,"exp":"@RequestParam 可接收 List 等集合参数，如 @RequestParam List<Long> ids。"},
+        {"stem":"下列哪个注解可以获取到url中{id}的值：@GetMapping(\"/users/{id}\")","opts":["@RequestMapping","@ResponseBody","@PathVariable","@RequestMapping"],"ans":2,"exp":"@PathVariable 绑定 URL 模板变量 {id} 到方法参数。@RequestParam 获取查询参数。"},
+        {"stem":"在RESTFUL风格中，一般我们作为查询请求的是（ ）","opts":["@GetMapping","@PostMapping","@PutMapping","@DeleteMapping"],"ans":0,"exp":"RESTful: GET=查询、POST=新增、PUT=修改、DELETE=删除。"},
+        {"stem":"配置文件中有 enterprise.name=张三，能正确读取到该值的是：","opts":["@Autowired(\"enterprise.name\")","@Environment(\"enterprise.name\")","@Configuration(prefix=\"enterprise\")","@Value(${enterprise.name})"],"ans":3,"exp":"@Value(\"${enterprise.name}\") 注入配置文件中的属性值。@ConfigurationProperties 用于批量注入。"},
+        {"stem":"Mybatis中xml中的（< >）字符转义需要使用（ ）","opts":["&lt;","&gt;","#lte;","&gte;"],"ans":0,"exp":"< 转义为 &lt;（less than），> 转义为 &gt;（greater than）。#lte; 和 &gte; 不是标准 XML 实体。"},
+        {"stem":"Mybatis中要添加数据，id自增，想获取新添加数据的id值给实体，正确的是：","opts":["在<insert>标签中添加 useGeneratedKeys=\"true\"","在插入sql中手动写入id字段","什么也不需要做","把<insert>标签中的 keyProperty=\"id\" 删除"],"ans":0,"exp":"useGeneratedKeys=\"true\" 让 MyBatis 获取自增主键，配合 keyProperty=\"id\" 回填到实体。"},
+        {"stem":"AOP错误的说法是（ ）","opts":["需要导入aop的依赖","需要在通知类上加@Aspect","AOP面向对象编程，面向class编程","AOP面向切面编程，一种编程范式"],"ans":2,"exp":"AOP 是面向切面编程（Aspect Oriented Programming），OOP 才是面向对象编程。"},
+        {"stem":"MyBatis动态SQL：参数name不为null且不为空则查询username=name，否则查全部，正确写法是：","opts":["<if test=\"name != null and name != ''\">username=#{name}</if>","<if test=\"username != null\">username=#{name}</if>","<if test=\"name != null\">name=#{username}</if>","<if test=\"name != null\">username=#{name}</if>"],"ans":0,"exp":"test 中引用方法参数名 name，需同时判断 null 和空串。字段名用 username=#{name}。"},
+        {"stem":"下列关于Redis描述错误的是（ ）","opts":["Redis是开源的","Redis是基于内存的可持久化键值存储数据库","Redis使用Python语言编写","Redis是一种非关系型数据库"],"ans":2,"exp":"Redis 使用 C 语言编写，不是 Python。Redis 是开源的、基于内存的 NoSQL 数据库。"},
+        {"stem":"@Controller+@RequestMapping(\"/first\")，方法@RequestMapping(\"/hello\")，正确访问URL是：","opts":["/hello/firstController","/first/hello","/first/first","/hello/first"],"ans":1,"exp":"类上的 @RequestMapping 定义 URL 前缀 /first，方法上定义 /hello，完整路径 = 类前缀 + 方法路径 = /first/hello。"},
+        {"stem":"下面哪个是SpringBoot启动类的注解（ ）","opts":["@Configuration","@SpringApplication","@SpringBootApplication","@ComponentScan"],"ans":2,"exp":"@SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan。"},
+        {"stem":"@Controller+@RequestMapping(\"/user\")，方法@RequestMapping(\"/toLogin\")，正确访问URL：","opts":["/user","/user/toLogin","/user/login","/toLogin"],"ans":1,"exp":"类前缀 /user + 方法路径 /toLogin = /user/toLogin。"},
+        {"stem":"更改Springboot的端口为8082，配置正确的是（ ）","opts":["spring.port=8082","server.port=8082","springboot.port=8082","session.port=8082"],"ans":1,"exp":"Spring Boot 端口配置属性为 server.port，不是 spring.port。"},
+        {"stem":"Spring MVC接收指定日期格式的注解是","opts":["@DateTimeFormat","@DateTime","@DataParam","@ResponseBody"],"ans":0,"exp":"@DateTimeFormat(pattern=\"yyyy-MM-dd\") 指定日期参数格式，配合 Spring MVC 类型转换。"},
+        {"stem":"在配置文件中想要修改tomcat服务器的启动端口需要修改（）参数","opts":["server.port","spring.port","springboot.port","spring.profiles"],"ans":0,"exp":"server.port 是内嵌 Tomcat 的端口配置属性。"},
+        {"stem":"全局异常拦截器，一般在类的上方添加的注解是（）","opts":["@RestControllerAdvice","@RestController","@Controller","@HandlerInterceptor"],"ans":0,"exp":"@RestControllerAdvice 配合 @ExceptionHandler 实现全局异常处理。"},
+        {"stem":"AOP面向切面编程中用于定义环绕通知的注解是（）","opts":["@Before","@Around","@After","@Rounding"],"ans":1,"exp":"@Around 定义环绕通知。@Before 前置、@After 后置，@Rounding 不存在。"},
+        {"stem":"mybatis中resultMap中的property属性代表","opts":["实体类的属性名","数据表的列名","数据表的表名","实体类的类名"],"ans":0,"exp":"resultMap: property=实体类属性名，column=数据库列名。"},
+        {"stem":"使用RedisTemplate操作String类型数据，应调用哪个方法","opts":["opsForList()","opsForValue()","opsForSet()","opsForHash()"],"ans":1,"exp":"opsForValue() 操作 String。opsForList/Set/Hash 分别操作 List/Set/Hash 类型。"}
+      ]},
+      { type: "判断", scoreEach: 4, label: "二、判断题（共28题，112分）", questions: [
+        {"stem":"MyBatis映射文件中<mapper>元素是配置文件的根元素，包含namespace属性指定唯一命名空间。","ans":true,"exp":"<mapper namespace=\"xxx\"> 是根元素，namespace 必须唯一，通常对应 DAO 接口全限定名。"},
+        {"stem":"当数据表中的字段和对象的属性名称不完全一致时，可以使用<resultMap>元素进行处理。","ans":true,"exp":"<resultMap> 自定义字段与属性的映射关系，解决名称不一致问题。"},
+        {"stem":"@RequestMapping的method属性必须配置。","ans":false,"exp":"method 属性可选，不配则匹配所有 HTTP 方法。@GetMapping 等已内置 method。"},
+        {"stem":"RESTful风格中put、delete、post和get分别对应添加、删除、修改和查询。","ans":false,"exp":"正确：POST=新增、DELETE=删除、PUT=修改、GET=查询。题目把 PUT 和 POST 搞反了。"},
+        {"stem":"Spring开发不需要任何第三方依赖包。","ans":false,"exp":"Spring 需要大量第三方依赖（如日志、数据库驱动、JSON 库等）。Maven/Gradle 管理这些依赖。"},
+        {"stem":"依赖注入（DI）与控制反转（IoC）的含义不同，描述的不是同一个概念。","ans":true,"exp":"IoC 是思想/原则，DI 是 IoC 的具体实现方式。两者相关但含义不同。"},
+        {"stem":"可以通过实现HandlerInterceptor接口来定义拦截器类。","ans":true,"exp":"实现 HandlerInterceptor 接口并重写 preHandle/postHandle/afterCompletion 即可。"},
+        {"stem":"当拦截器类中的preHandle()方法返回值为false，则程序会继续向下执行。","ans":false,"exp":"preHandle() 返回 false 表示拦截，不会继续执行后续拦截器和 Controller。"},
+        {"stem":"singleton是Spring容器默认的作用域。","ans":true,"exp":"Spring 默认 Bean 作用域为 Singleton（单例），整个容器只有一个实例。"},
+        {"stem":"在Spring中，必须通过XML配置才能实现依赖注入。","ans":false,"exp":"Spring 支持 XML、注解和 Java Config 三种 DI 方式，XML 完全可选。"},
+        {"stem":"AOP中的切入点（Pointcut）用于定义在哪些连接点（Joinpoint）应用通知。","ans":true,"exp":"Pointcut 通过表达式匹配连接点，定义通知在哪些方法上执行。"},
+        {"stem":"@RestController是@Controller和@ResponseBody的组合注解。","ans":true,"exp":"@RestController = @Controller + @ResponseBody，所有方法返回值直接序列化为 JSON。"},
+        {"stem":"在Spring中，@Transactional注解可以通过AOP实现事务管理。","ans":true,"exp":"Spring 事务管理基于 AOP 代理实现，方法执行前后自动开启、提交或回滚事务。"},
+        {"stem":"@Autowired注解默认按名称进行依赖注入。","ans":false,"exp":"@Autowired 默认按类型（byType）注入。按名称需配合 @Qualifier(\"beanName\")。"},
+        {"stem":"@Aspect注解用于声明一个切面类。","ans":true,"exp":"@Aspect 标识切面类，配合 @Component 让 Spring 管理，内部定义通知和切点。"},
+        {"stem":"@RequestMapping注解只能用于方法级别。","ans":false,"exp":"可用于类级别（URL 前缀）和方法级别（具体路径），两者组合成完整 URL。"},
+        {"stem":"@AfterReturning注解的方法在目标方法抛出异常时也可以执行。","ans":false,"exp":"@AfterReturning 只在方法正常返回时执行。异常时用 @AfterThrowing。@After 无论异常都执行。"},
+        {"stem":"@Transactional注解只能用于方法的注解。","ans":false,"exp":"可用于类和方法级别。类级别表示所有 public 方法都开启事务。"},
+        {"stem":"@Service注解是在数据访问层使用。","ans":false,"exp":"@Service 用于业务层。数据访问层用 @Repository，控制层用 @Controller。"},
+        {"stem":"在使用AOP时，使用@Pointcut用于定义切入点表达式。","ans":true,"exp":"@Pointcut 定义可复用的切入点表达式，被 @Before/@Around 等通知引用。"},
+        {"stem":"使用@Transactional注解进行事务管理。","ans":true,"exp":"@Transactional 是 Spring 声明式事务核心注解，基于 AOP 实现。"},
+        {"stem":"@RequestMapping注解只能在方法上使用。","ans":false,"exp":"也可用于类级别定义 URL 前缀。此题与第16/22题重复考察同一知识点。"},
+        {"stem":"在Spring MVC中，@RequestMapping注解将请求与处理方法一一对应。","ans":true,"exp":"@RequestMapping 建立 URL 请求到处理方法的映射关系，实现请求分发。"},
+        {"stem":"Spring MVC的拦截器Interceptor主要作用于拦截用户的请求并做相应的处理。","ans":true,"exp":"Interceptor 拦截用户请求，可在 Controller 前后进行预处理和后处理（如登录检查、日志等）。"},
+        {"stem":"拦截器的preHandle方法在控制器的处理请求方法前执行。","ans":true,"exp":"preHandle() 在 Controller 方法执行前调用，返回 true 放行，false 拦截。"},
+        {"stem":"使用@ControllerAdvice注解和@ExceptionHandler注解进行全局异常处理。","ans":true,"exp":"@ControllerAdvice + @ExceptionHandler 实现全局异常统一处理。"},
+        {"stem":"MyBatis的XML文件中的sql标签可以定义一部分SQL，在多个位置可以引用这个标签。","ans":true,"exp":"<sql id=\"...\"> 定义可复用的 SQL 片段，通过 <include refid=\"...\"> 在多个位置引用。"},
+        {"stem":"MyBatis常用的动态SQL元素有<if>、<where>等。","ans":true,"exp":"MyBatis 动态 SQL 包括 <if>、<where>、<foreach>、<choose>、<set>、<trim> 等元素。"}
+      ]},
+      { type: "简答", scoreEach: 5, label: "三、简答题（共3题，15分）", questions: [
+        {"stem":"请简述Spring核心容器层由哪些模块组成。","exp":"spring-core（IoC/DI基础）、spring-beans（BeanFactory）、spring-context（ApplicationContext）、spring-context-support（第三方集成）、spring-expression（SpEL表达式语言）。"},
+        {"stem":"什么是IoC（Inversion of Control）控制反转，请说出你的理解。","exp":"IoC 控制反转：将对象创建和管理权从程序代码交给 Spring 容器。传统方式用 new 创建依赖（高耦合），IoC 由容器注入依赖（低耦合）。DI（依赖注入）是 IoC 的具体实现方式，包括构造器注入、Setter 注入和字段注入。"},
+        {"stem":"@Controller和@ResponseBody合并成什么注解？简述@ResponseBody的作用。","exp":"合并为 @RestController。@ResponseBody 将方法返回值自动转为 JSON/XML 写入 HTTP 响应体，跳过视图解析器，适用于 RESTful API。"}
+      ]},
+    ]
   }
+
 ];
 
 // ========================  BUILD COMBINED PAPER  ========================
@@ -623,6 +687,15 @@ function renderContainer() {
   container.innerHTML = papers.map((_, pi) => renderPaper(pi)).join("");
 }
 
+function renderShort(qid, qGlobal, q, pi, si, qi) {
+  const srcTag = q.source ? '<span class="q-source">' + q.source + '</span>' : '';
+  return '<div class="q-card" id="card_' + qid + '" data-paper="' + pi + '" data-section="' + si + '" data-q="' + qi + '" data-type="short">\n' +
+    '    <div class="q-stem"><span class="q-num">' + qGlobal + '</span><span>' + q.stem + srcTag + '</span></div>\n' +
+    '    <textarea class="short-answer" id="short_' + qid + '" placeholder="请输入你的答案..." style="width:100%;min-height:80px;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:.94rem;resize:vertical;font-family:inherit;"></textarea>\n' +
+    '    <div class="feedback" id="fb_' + qid + '"></div>\n' +
+    '  </div>';
+}
+
 function renderPaper(pi) {
   const paper = papers[pi];
   let qGlobal = 0;
@@ -645,10 +718,19 @@ function renderPaper(pi) {
           const q = sec.questions[qi];
           qGlobal++;
           const qid = `p${pi}_s${si}_q${qi}`;
-          if (sec.type === '单选') {
+          if (sec.type === '简答') {
+        // Short answer: self-grade, show reference
+        card.classList.add('checked');
+        fb.innerHTML = '<div class="exp-box">📝 <strong>参考答案：</strong>' + (q.exp || '暂无') + '</div>';
+        fb.className = 'feedback';
+        fb.style.display = 'block';
+        // Don't count in score (self-grade)
+      } else if (sec.type === '单选') {
             return renderChoice(qid, qGlobal, q, pi, si, qi);
           } else if (sec.type === '判断') {
             return renderTF(qid, qGlobal, q, pi, si, qi);
+          } else if (sec.type === '简答') {
+            return renderShort(qid, qGlobal, q, pi, si, qi);
           } else {
             return renderFill(qid, qGlobal, q, pi, si, qi);
           }
