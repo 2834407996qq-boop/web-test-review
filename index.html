@@ -40,6 +40,10 @@
   .header p  { margin-top: 6px; opacity: .78; font-size: .92rem; }
 
   /* ===== Tabs ===== */
+  .subject-bar { display: flex; gap: 8px; max-width: 900px; margin: 0 auto; padding: 14px 16px 0; }
+  .subj-btn { padding: 8px 20px; border: 1.5px solid var(--border); background: var(--card); font-size: .95rem; font-weight: 600; cursor: pointer; color: var(--sub); border-radius: 20px; transition: all .18s; }
+  .subj-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 2px 12px rgba(79,70,229,.3); }
+  .subj-btn:hover:not(.active) { background: #f8fafc; border-color: #c4b5fd; }
   .tab-bar {
     display: flex;
     gap: 0;
@@ -269,15 +273,11 @@
 
 <div class="header">
   <h1>📝 Web 前端测试 — 复习题库</h1>
-  <p>三套试卷 · 单选 / 填空 / 判断 · 提交后显示对错与正确答案</p>
+  <p>多学科题库 · 单选 / 填空 / 判断 · 提交后显示对错与正确答案</p>
 </div>
 
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="switchPaper(0)">📋 Web测试（一）</button>
-  <button class="tab-btn" onclick="switchPaper(1)">📋 Web测试（二）</button>
-  <button class="tab-btn" onclick="switchPaper(2)">📋 Web测试（三）</button>
-  <button class="tab-btn" onclick="switchPaper(3)">📚 综合测试</button>
-</div>
+<div class="subject-bar" id="subjectBar"></div>
+<div class="tab-bar" id="tabBar"></div>
 
 <div class="container" id="papersContainer"></div>
 
@@ -297,7 +297,7 @@
 // ========================  DATA  ========================
 
 const papers = [
-  { // ===== Web测试（一） =====
+  { subject: "Web前端", // ===== Web测试（一） =====
     title: "Web测试（一）",
     sections: [
       { type: "单选", scoreEach: 2, label: "一、单选题（共10题，每题2分，总分20）", questions: [
@@ -364,7 +364,7 @@ const papers = [
       ]},
     ]
   },
-  { // ===== Web测试（二） =====
+  { subject: "Web前端", // ===== Web测试（二） =====
     title: "Web测试（二）",
     sections: [
       { type: "单选", scoreEach: 2, label: "一、单选题（共10题，每题2分，总分20）", questions: [
@@ -431,7 +431,7 @@ const papers = [
       ]},
     ]
   },
-  { // ===== Web测试（三） =====
+  { subject: "Web前端", // ===== Web测试（三） =====
     title: "Web测试（三）",
     sections: [
       { type: "单选", scoreEach: 2, label: "一、单选题（共10题，每题2分，总分20）", questions: [
@@ -498,44 +498,129 @@ const papers = [
       ]},
     ]
   }
+,
+  { subject: "SpringBoot", title: "SpringBoot测试",
+    sections: [
+      { type: "单选", scoreEach: 3, label: "一、单选题（共20题，60分）", questions: [
+        {"stem":"在Spring框架中实现控制反转的是()容器。","opts":["Spring AOP","Spring MVC","Spring Bean","Spring IoC"],"ans":3,"exp":"Spring IoC（控制反转）容器是Spring的核心，负责管理对象的创建、配置和生命周期。"},
+        {"stem":"Mybatis中xml中的(<)字符转义需要使用()","opts":["&lte;","&gte;","&gt;","&lt;"],"ans":3,"exp":"XML中 < 需转义为 &lt;（less than），> 转义为 &gt;（greater than）。"},
+        {"stem":"Spring中定义了一系列的注解，以下有关其常用的注解说明错误的是()。","opts":["@Controller通常作用在控制层","@Autowired默认按照Bean的名称进行装配","@Repository用于将数据访问层(DAO层)的类标识为Spring中的Bean","@Service通常作用在业务层"],"ans":1,"exp":"@Autowired 默认按类型（byType）装配，不是按名称。按名称需配合 @Qualifier 注解。"},
+        {"stem":"AOP面向切面编程中用于定义环绕通知的注解是()","opts":["@Around","@Before","@Rounding","@After"],"ans":0,"exp":"@Around 是环绕通知注解，可在目标方法前后都执行自定义逻辑。"},
+        {"stem":"spring-core模块提供了Spring框架的基本组成部分，包括控制反转和()功能。","opts":["切面注入","对象注入","依赖注入","解耦注入"],"ans":2,"exp":"spring-core 提供 IoC（控制反转）和 DI（依赖注入）两大核心功能。"},
+        {"stem":"Mybatis中，我要添加一条数据，参数为实体类型，想要获取到新添加数据的id值给实体，正确的是：","opts":["把<insert>标签中的keyProperty删除","在插入sql语句里面手动写入id字段赋值","什么也不需要做","在<insert>标签中添加useGeneratedKeys=true"],"ans":3,"exp":"useGeneratedKeys=true 让MyBatis获取数据库自增主键值，配合keyProperty将值回填到实体。"},
+        {"stem":"在Spring中，默认的Bean作用域是?","opts":["Prototype","Request","Singleton","Session"],"ans":2,"exp":"Spring默认Bean作用域是Singleton（单例），整个容器中只有一个实例。"},
+        {"stem":"全局异常拦截器，一般在类的上方添加的注解是()","opts":["@HandlerInterceptor","@RestController","@Controller","@RestControllerAdvice"],"ans":3,"exp":"@RestControllerAdvice配合@ExceptionHandler实现全局异常处理。"},
+        {"stem":"Spring MVC中接收json格式数据使用的注解是()","opts":["@PathVariable","@ResponseBody","@Controller","@RequestBody"],"ans":3,"exp":"@RequestBody用于接收请求体中的JSON数据并反序列化为Java对象。"},
+        {"stem":"在RESTFUL风格中，一般我们作为查询请求的是()","opts":["@DeleteMapping","@GetMapping","@PutMapping","@PostMapping"],"ans":1,"exp":"RESTful：@GetMapping查询、@PostMapping新增、@PutMapping修改、@DeleteMapping删除。"},
+        {"stem":"Spring MVC接收指定日期格式的注解是","opts":["@DateTimeFormat","@ResponseBody","@DataParam","@DateTime"],"ans":0,"exp":"@DateTimeFormat(pattern)用于指定日期参数的格式。"},
+        {"stem":"mybatis中resultMap中的property属性代表","opts":["实体类的属性名","实体类的类名","数据表的表名","数据表的列名"],"ans":0,"exp":"resultMap中property对应实体类属性名，column对应数据库列名。"},
+        {"stem":"下列选项，用于指定扫描包或者扫描路径的注解是()。","opts":["@ComponentScan","@EnableWebMvc","@Value","@PropertySource"],"ans":0,"exp":"@ComponentScan指定Spring扫描Bean的包路径。"},
+        {"stem":"下列哪个注解用于定义环绕通知?","opts":["@Before","@Around","@After","@AfterReturning"],"ans":1,"exp":"@Around定义环绕通知，是功能最强的通知类型。"},
+        {"stem":"以下哪个选项不属于Spring的核心容器的组成模块。","opts":["Context模块","Beans模块","Core模块","AOP模块"],"ans":3,"exp":"Spring核心容器包括Core、Beans、Context、SpEL模块，AOP模块不属于核心容器。"},
+        {"stem":"下面哪个是SpringBoot启动类的注解()","opts":["@Configuration","@SpringBootApplication","@SpringApplication","@ComponentScan"],"ans":1,"exp":"@SpringBootApplication包含@Configuration、@EnableAutoConfiguration和@ComponentScan。"},
+        {"stem":"AOP错误的说法是()","opts":["AOP面向对象编程，面向class编程","需要在通知类上加@Aspect","需要导入aop的依赖","AOP面向切面编程"],"ans":0,"exp":"AOP（Aspect Oriented Programming）是面向切面编程，OOP才是面向对象编程。"},
+        {"stem":"使用RedisTemplate操作String类型数据、应调用哪个方法","opts":["opsForList()","opsForSet()","opsForValue()","opsForHash()"],"ans":2,"exp":"opsForValue()操作String类型，opsForList/Set/Hash分别操作对应类型。"},
+        {"stem":"下列有关Spring框架的描述，错误的是()。","opts":["Spring是轻量级框架","一站式服务的框架","开源框架","持久层框架"],"ans":3,"exp":"Spring是全能型框架，不是专门的持久层框架。MyBatis、Hibernate才是持久层框架。"},
+        {"stem":"Spring MVC中能正确接收到集合参数的是","opts":["@Parameter","@ResponseBody","@RequestParam","@Default"],"ans":2,"exp":"@RequestParam用于接收请求参数，可接收List等集合类型。"}
+      ]},
+      { type: "判断", scoreEach: 2, label: "二、判断题（共20题，40分）", questions: [
+        {"stem":"拦截器的preHandle方法在控制器的处理请求方法前执行","ans":true,"exp":"preHandle()在请求到达Controller之前执行，返回true放行，false拦截。"},
+        {"stem":"依赖注入(DI)与控制反转(IoC)的含义不同，描述的不是同一个概念","ans":true,"exp":"IoC和DI描述角度不同但目标相同。DI是IoC的具体实现方式。"},
+        {"stem":"在Spring中，@Transactional注解可以通过AOP实现事务管理","ans":true,"exp":"Spring事务管理基于AOP实现，通过代理在方法执行前后开启、提交或回滚事务。"},
+        {"stem":"@RestController是@Controller和@ResponseBody的组合注解","ans":true,"exp":"@RestController = @Controller + @ResponseBody，所有方法返回值直接序列化为JSON。"},
+        {"stem":"MyBatis映射文件中<mapper>元素是配置文件的根元素，包含namespace属性指定唯一命名空间。","ans":true,"exp":"<mapper namespace>是映射文件根元素，namespace通常对应DAO接口的全限定名。"},
+        {"stem":"当拦截器类中的preHandle()方法返回值为false，则程序会继续向下执行","ans":false,"exp":"preHandle()返回false表示拦截请求，不会继续执行后续拦截器和Controller。"},
+        {"stem":"@Aspect注解用于声明一个切面类","ans":true,"exp":"@Aspect标识一个类为切面类，配合@Component让Spring管理。"},
+        {"stem":"@Autowired注解默认按名称进行依赖注入","ans":false,"exp":"@Autowired默认按类型（byType）注入。按名称需配合@Qualifier。"},
+        {"stem":"@RequestMapping的method属性必须配置","ans":false,"exp":"@RequestMapping的method属性可选。@GetMapping等已内置method限定。"},
+        {"stem":"singleton是Spring容器默认的作用域","ans":true,"exp":"Spring容器默认Bean作用域为Singleton（单例），每次获取返回同一个对象。"},
+        {"stem":"AOP中的切点(Pointcut)用于定义在哪些连接点(Joinpoint)应用通知","ans":true,"exp":"切点（Pointcut）定义通知在哪些方法上执行，通过表达式匹配连接点。"},
+        {"stem":"@Service注解是在数据访问层使用","ans":false,"exp":"@Service用于业务层。数据访问层应使用@Repository注解。"},
+        {"stem":"RESTful风格中put、delete、post和get分别对应添加、删除、修改和查询。","ans":false,"exp":"正确：POST=新增、DELETE=删除、PUT=修改、GET=查询。题目中PUT和POST颠倒。"},
+        {"stem":"@RequestMapping注解只能用于方法级别","ans":false,"exp":"@RequestMapping可用于类级别（URL前缀）和方法级别（具体路径）。"},
+        {"stem":"使用@ControllerAdvice注解和@ExceptionHandler注解进行全局异常处理","ans":true,"exp":"@ControllerAdvice配合@ExceptionHandler实现全局异常拦截。"},
+        {"stem":"在Spring中，必须通过XML配置才能实现依赖注入","ans":false,"exp":"Spring支持XML、注解和Java Config三种DI方式，XML完全可选。"},
+        {"stem":"可以通过实现HandlerInterceptor接口来定义拦截器类。","ans":true,"exp":"实现HandlerInterceptor接口并重写preHandle/postHandle/afterCompletion即可。"},
+        {"stem":"@Transactional注解只能用于方法的注解。","ans":false,"exp":"@Transactional可用于类和方法级别。类级别表示所有public方法都开启事务。"},
+        {"stem":"使用@Transactional注解进行事务管理","ans":true,"exp":"@Transactional是Spring声明式事务的核心注解，底层基于AOP实现。"},
+        {"stem":"数据表字段和对象属性名称不一致时，可以使用<resultMap>元素进行映射处理。","ans":true,"exp":"<resultMap>用于自定义字段与属性的映射关系，解决名称不一致和复杂映射。"}
+      ]},
+    ]
+  }
 ];
 
 // ========================  BUILD COMBINED PAPER  ========================
 (function buildCombined() {
-  const sources = ["Web测试（一）", "Web测试（二）", "Web测试（三）"];
-  const combined = { title: "综合测试（三套整合）", sections: [] };
-  const secTypes = ["单选", "填空", "判断"];
-  secTypes.forEach(type => {
-    const merged = [];
-    papers.forEach((p, pi) => {
-      const sec = p.sections.find(s => s.type === type);
-      if (sec) {
-        sec.questions.forEach(q => {
-          merged.push({ ...q, source: sources[pi] });
+  const subjDefs = [
+    { name: "Web前端", indices: [0, 1, 2], sources: ["Web测试（一）", "Web测试（二）", "Web测试（三）"] },
+  ];
+  subjDefs.forEach(subj => {
+    const secTypes = ["单选", "填空", "判断"];
+    const sourcePapers = subj.indices.map(i => papers[i]);
+    const combined = { subject: subj.name, title: "综合测试（三套整合）", sections: [] };
+    secTypes.forEach(type => {
+      const merged = [];
+      sourcePapers.forEach((p, pi) => {
+        const sec = p.sections.find(s => s.type === type);
+        if (sec) {
+          sec.questions.forEach(q => {
+            merged.push({ ...q, source: subj.sources[pi] });
+          });
+        }
+      });
+      if (merged.length > 0) {
+        combined.sections.push({
+          type: type,
+          scoreEach: type === "单选" ? 2 : 1,
+          label: (type === "单选" ? "一" : type === "填空" ? "二" : "三") + "、" + type + "题（共" + merged.length + "题）",
+          questions: merged
         });
       }
     });
-    combined.sections.push({
-      type: type,
-      scoreEach: type === "单选" ? 2 : 1,
-      label: (type === "单选" ? "一" : type === "填空" ? "二" : "三") + "、" + type + "题（共" + merged.length + "题）",
-      questions: merged
-    });
+    papers.push(combined);
   });
-  papers.push(combined);
 })();
 
 // ========================  GLOBALS  ========================
+let currentSubject = "Web前端";
 let currentPaper = 0;
 let shuffleMap = {};  // { paperIdx: [{si, qi}, ...] } — null/absent = original order
 let wrongCards = [];  // list of card element IDs that were wrong
-let wrongIdx = 0;     // current index for scroll-to-wrong navigation
+let wrongIdx = 0;
+
+function getPapersForSubject(subj) {
+  return papers.filter(p => p.subject === subj);
+}
+function getGlobalPaperIdx(subj, localIdx) {
+  const subjPapers = getPapersForSubject(subj);
+  if (localIdx >= subjPapers.length) return -1;
+  return papers.indexOf(subjPapers[localIdx]);
+}
 
 // ========================  RENDER  ========================
 
 function renderAll() {
-  const container = document.getElementById('papersContainer');
-  container.innerHTML = papers.map((_, pi) => renderPaper(pi)).join('');
+  renderSubjectBar();
+  renderTabBar();
+  renderContainer();
+}
+
+function renderSubjectBar() {
+  const bar = document.getElementById("subjectBar");
+  const subjects = [...new Set(papers.map(p => p.subject))];
+  bar.innerHTML = subjects.map(s => '<button class="subj-btn' + (s === currentSubject ? ' active' : '') + '" onclick="switchSubject(\'' + s + '\')">📖 ' + s + '</button>').join("");
+}
+
+function renderTabBar() {
+  const bar = document.getElementById("tabBar");
+  if (!bar) return;
+  const subjPapers = getPapersForSubject(currentSubject);
+  bar.innerHTML = subjPapers.map((p, i) => '<button class="tab-btn' + (i === currentPaper ? ' active' : '') + '" onclick="switchPaper(' + i + ')">📋 ' + p.title + '</button>').join("");
+}
+
+function renderContainer() {
+  const container = document.getElementById("papersContainer");
+  container.innerHTML = papers.map((_, pi) => renderPaper(pi)).join("");
 }
 
 function renderPaper(pi) {
@@ -623,13 +708,14 @@ function renderFill(qid, qGlobal, q, pi, si, qi) {
 // ========================  GRADING  ========================
 
 function gradeCurrent() {
-  const paper = papers[currentPaper];
+  const globalIdx = getGlobalPaperIdx(currentSubject, currentPaper);
+  const paper = papers[globalIdx];
   let totalScore = 0;
   let earnedScore = 0;
 
   paper.sections.forEach((sec, si) => {
     sec.questions.forEach((q, qi) => {
-      const qid = `p${currentPaper}_s${si}_q${qi}`;
+      const qid = `p${globalIdx}_s${si}_q${qi}`;
       const card = document.getElementById(`card_${qid}`);
       const fb = document.getElementById(`fb_${qid}`);
       if (!card || !fb) return;
@@ -759,17 +845,14 @@ function scrollToWrong() {
 // ========================  RESET  ========================
 
 function resetPaper() {
-  // Clear shuffle
-  delete shuffleMap[currentPaper];
-  // Clear wrong cards
+  const globalIdx = getGlobalPaperIdx(currentSubject, currentPaper);
+  delete shuffleMap[globalIdx];
   wrongCards = [];
   wrongIdx = 0;
-  document.getElementById('btnWrong').style.display = 'none';
-  // Re-render to restore original order & clear inputs
-  const container = document.getElementById('papersContainer');
-  const paperDiv = document.getElementById(`paper${currentPaper}`);
+  document.getElementById("btnWrong").style.display = "none";
+  const paperDiv = document.getElementById(`paper${globalIdx}`);
   if (paperDiv) {
-    paperDiv.outerHTML = renderPaper(currentPaper);
+    paperDiv.outerHTML = renderPaper(globalIdx);
   }
   // Hide score
   document.getElementById('scoreText').style.display = 'none';
@@ -780,7 +863,8 @@ function resetPaper() {
 // ========================  SHUFFLE  ========================
 
 function shufflePaper() {
-  const paper = papers[currentPaper];
+  const globalIdx = getGlobalPaperIdx(currentSubject, currentPaper);
+  const paper = papers[globalIdx];
   const order = [];
   paper.sections.forEach((sec, si) => {
     // Create array of indices for this section
@@ -792,9 +876,8 @@ function shufflePaper() {
     }
     order.push(...indices);
   });
-  shuffleMap[currentPaper] = order;
-  // Re-render
-  const paperDiv = document.getElementById(`paper${currentPaper}`);
+  shuffleMap[globalIdx] = order;
+  const paperDiv = document.getElementById(`paper${globalIdx}`);
   if (paperDiv) {
     paperDiv.outerHTML = renderPaper(currentPaper);
   }
@@ -806,14 +889,28 @@ function shufflePaper() {
 
 // ========================  TAB SWITCH  ========================
 
+function switchSubject(subj) {
+  currentSubject = subj;
+  currentPaper = 0;
+  wrongCards = [];
+  wrongIdx = 0;
+  document.getElementById("btnWrong").style.display = "none";
+  document.getElementById("scoreText").style.display = "none";
+  document.getElementById("scoreHint").style.display = "block";
+  renderSubjectBar();
+  renderTabBar();
+  renderContainer();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function switchPaper(idx) {
   currentPaper = idx;
-  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-  document.querySelectorAll('.paper').forEach((p, i) => p.classList.toggle('active', i === idx));
-  // Hide score when switching
-  document.getElementById('scoreText').style.display = 'none';
-  document.getElementById('scoreHint').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelectorAll(".tab-btn").forEach((b, i) => b.classList.toggle("active", i === idx));
+  const globalIdx = getGlobalPaperIdx(currentSubject, idx);
+  document.querySelectorAll(".paper").forEach((p, i) => p.classList.toggle("active", i === globalIdx));
+  document.getElementById("scoreText").style.display = "none";
+  document.getElementById("scoreHint").style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // ========================  INIT  ========================
