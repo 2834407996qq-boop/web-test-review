@@ -787,6 +787,8 @@ function renderFill(qid, qGlobal, q, pi, si, qi) {
 function gradeCurrent() {
   const globalIdx = getGlobalPaperIdx(currentSubject, currentPaper);
   const paper = papers[globalIdx];
+  wrongCards = [];  // clear previous paper's wrong cards
+  wrongIdx = 0;
   let totalScore = 0;
   let earnedScore = 0;
 
@@ -922,13 +924,12 @@ function scrollToWrong() {
   const el = document.getElementById(id);
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    // Highlight pulse
     el.style.boxShadow = '0 0 0 4px #f59e0b';
     setTimeout(() => { el.style.boxShadow = ''; }, 1500);
   }
-  // Advance with wrap-around
   wrongIdx = (wrongIdx + 1) % wrongCards.length;
-  document.getElementById('btnWrong').textContent = `📍 下一错题 (${wrongIdx + 1}/${wrongCards.length})`;
+  const btn = document.getElementById('btnWrong');
+  if (btn) btn.textContent = `📍 下一错题 (${wrongIdx + 1}/${wrongCards.length})`;
 }
 
 // ========================  RESET  ========================
