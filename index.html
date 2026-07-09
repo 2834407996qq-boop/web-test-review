@@ -702,7 +702,8 @@ function renderPaper(pi) {
   let qGlobal = 0;
   const order = shuffleMap[pi]; // [{si, qi}, ...] per section if shuffled
 
-  return `<div class="paper${pi === 0 ? ' active' : ''}" id="paper${pi}">
+  const activeGlobalIdx = getGlobalPaperIdx(currentSubject, currentPaper);
+  return `<div class="paper${pi === activeGlobalIdx ? ' active' : ''}" id="paper${pi}">
     ${paper.sections.map((sec, si) => {
       // Determine display order for this section
       let indices;
