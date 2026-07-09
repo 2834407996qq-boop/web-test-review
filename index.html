@@ -796,15 +796,21 @@ function gradeCurrent() {
       const fb = document.getElementById(`fb_${qid}`);
       if (!card || !fb) return;
 
-      totalScore += sec.scoreEach;
       let isCorrect = false;
       let correctDisplay = '';
 
       if (sec.type === '简答') {
-        // Short answer: self-grade, show reference
-        isCorrect = true; // neutral, not graded
+        // Short answer: self-grade, not counted in score
         card.classList.add('checked');
         fb.innerHTML = '<div class="exp-box">📝 <strong>参考答案：</strong>' + (q.exp || '暂无') + '</div>';
+        fb.className = 'feedback';
+        fb.style.display = 'block';
+        // Skip score tracking for this question
+      } else {
+        totalScore += sec.scoreEach;
+      }
+
+      if (sec.type === '单选') {
         fb.className = 'feedback';
         fb.style.display = 'block';
       } else if (sec.type === '单选') {
@@ -870,21 +876,23 @@ function gradeCurrent() {
         correctDisplay = correctParts.join('、');
       }
 
-      // Update card & feedback
-      card.classList.remove('correct','wrong','checked');
-      card.classList.add('checked', isCorrect ? 'correct' : 'wrong');
-      if (isCorrect) {
-        fb.innerHTML = '✅ 回答正确！';
-        fb.className = 'feedback correct-msg';
-      } else {
-        fb.innerHTML = `❌ 回答错误，正确答案：<span class="correct-answer-text">${correctDisplay}</span>`;
-        fb.className = 'feedback wrong-msg';
+      // Update card & feedback (skip 简答 - handled inline)
+      if (sec.type !== '简答') {
+        card.classList.remove('correct','wrong','checked');
+        card.classList.add('checked', isCorrect ? 'correct' : 'wrong');
+        if (isCorrect) {
+          fb.innerHTML = '✅ 回答正确！';
+          fb.className = 'feedback correct-msg';
+        } else {
+          fb.innerHTML = `❌ 回答错误，正确答案：<span class="correct-answer-text">${correctDisplay}</span>`;
+          fb.className = 'feedback wrong-msg';
+        }
+        if (q.exp) {
+          fb.innerHTML += `<div class="exp-box">💡 ${q.exp}</div>`;
+        }
+        // Collect wrong cards
+        if (!isCorrect) wrongCards.push(`card_${qid}`);
       }
-      if (q.exp) {
-        fb.innerHTML += `<div class="exp-box">💡 ${q.exp}</div>`;
-      }
-      // Collect wrong cards
-      if (!isCorrect) wrongCards.push(`card_${qid}`);
     });
   });
 
