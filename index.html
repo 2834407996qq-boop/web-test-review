@@ -968,7 +968,7 @@ function shufflePaper() {
   shuffleMap[globalIdx] = order;
   const paperDiv = document.getElementById(`paper${globalIdx}`);
   if (paperDiv) {
-    paperDiv.outerHTML = renderPaper(currentPaper);
+    paperDiv.outerHTML = renderPaper(globalIdx);
   }
   // Hide score
   document.getElementById('scoreText').style.display = 'none';
