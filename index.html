@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web 前端测试 — 复习题库</title>
+<style>
+  :root {
+    --bg: #f0f2f5;
+    --card: #fff;
+    --text: #1a1a2e;
+    --sub: #555;
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --border: #e5e7eb;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4f46e5 100%);
+    color: #fff;
+    padding: 28px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(79,70,229,.25);
+  }
+  .header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: .02em; }
+  .header p  { margin-top: 6px; opacity: .78; font-size: .92rem; }
+
+  /* ===== Tabs ===== */
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    max-width: 900px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--sub);
+    transition: all .18s;
+  }
+  .tab-btn:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+  .tab-btn:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    z-index: 1;
+    box-shadow: 0 2px 12px rgba(79,70,229,.3);
+  }
+  .tab-btn:hover:not(.active) { background: #f8fafc; }
+
+  /* ===== Main Container ===== */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px 16px 60px;
+  }
+  .paper { display: none; }
+  .paper.active { display: block; }
+
+  /* ===== Section Title ===== */
+  .section-title {
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 28px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: #fff;
+    font-size: .78rem;
+    border-radius: 20px;
+    padding: 2px 12px;
+    white-space: nowrap;
+  }
+
+  /* ===== Question Card ===== */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    transition: all .25s;
+  }
+  .q-card.correct { border-color: var(--green); background: var(--green-bg); }
+  .q-card.wrong   { border-color: var(--red);  background: var(--red-bg);  }
+  .q-num {
+    display: inline-block;
+    width: 28px; height: 28px;
+    line-height: 28px;
+    text-align: center;
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: .82rem;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  .q-card.correct .q-num { background: #bbf7d0; color: #15803d; }
+  .q-card.wrong   .q-num { background: #fecaca; color: #b91c1c; }
+  .q-source {
+    display: inline-block;
+    font-size: .72rem;
+    background: #fef3c7;
+    color: #92400e;
+    padding: 1px 8px;
+    border-radius: 10px;
+    margin-left: 6px;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .q-stem { font-weight: 600; margin-bottom: 10px; display: flex; align-items: flex-start; }
+
+  /* ===== Options (radio) ===== */
+  .options { display: flex; flex-direction: column; gap: 6px; }
+  .opt-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+    font-size: .94rem;
+  }
+  .opt-label:hover { background: #f8fafc; }
+  .opt-label input[type="radio"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+  .opt-label.chosen-correct { background: #bbf7d0; border-color: var(--green); }
+  .opt-label.chosen-wrong   { background: #fecaca; border-color: var(--red);  }
+  .opt-label.real-answer    { background: #bbf7d0; border-color: var(--green); }
+
+  /* ===== Fill-in-blank inputs ===== */
+  .fill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .fill-row input[type="text"] {
+    flex: 1;
+    min-width: 120px;
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: .94rem;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    transition: border-color .15s;
+    background: #fafafa;
+  }
+  .fill-row input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+    background: #fff;
+  }
+  .fill-row input[type="text"].input-correct { border-color: var(--green); background: #f0fdf4; }
+  .fill-row input[type="text"].input-wrong   { border-color: var(--red);  background: #fef2f2; }
+  .fill-label {
+    font-size: .82rem;
+    color: var(--sub);
+    white-space: nowrap;
+  }
+
+  /* ===== Feedback line ===== */
+  .feedback {
+    margin-top: 10px;
+    font-size: .88rem;
+    display: none;
+  }
+  .q-card.checked .feedback { display: block; }
+  .feedback.correct-msg { color: var(--green); }
+  .feedback.wrong-msg   { color: var(--red);  }
+  .feedback .correct-answer-text {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    font-size: .85rem;
+    margin-left: 4px;
+  }
+
+  /* ===== Submit / Score bar ===== */
+  .score-bar {
+    position: sticky;
+    bottom: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 -2px 20px rgba(0,0,0,.08);
+    flex-wrap: wrap;
+  }
+  .score-text { font-weight: 700; font-size: 1.05rem; }
+  .score-text .big { font-size: 1.5rem; }
+  .btn {
+    padding: 10px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    letter-spacing: .02em;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #4338ca; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(79,70,229,.35); }
+  .btn-outline { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
+  .btn-outline:hover { background: var(--accent-light); }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 640px) {
+    .header h1 { font-size: 1.3rem; }
+    .q-card { padding: 14px; }
+    .tab-btn { font-size: .82rem; padding: 10px 6px; }
+    .score-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📝 Web 前端测试 — 复习题库</h1>
+  <p>三套试卷 · 单选 / 填空 / 判断 · 提交后显示对错与正确答案</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchPaper(0)">📋 Web测试（一）</button>
+  <button class="tab-btn" onclick="switchPaper(1)">📋 Web测试（二）</button>
+  <button class="tab-btn" onclick="switchPaper(2)">📋 Web测试（三）</button>
+  <button class="tab-btn" onclick="switchPaper(3)">📚 综合测试</button>
+</div>
+
+<div class="container" id="papersContainer"></div>
+
+<div class="score-bar" id="scoreBar">
+  <div class="score-text" id="scoreText" style="display:none">得分：<span class="big" id="scoreNum">0</span> / <span id="scoreTotal">0</span></div>
+  <div class="score-text" id="scoreHint" style="color:#888;font-weight:400;font-size:.9rem">📝 做完题后点击「提交」查看对错</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-outline" onclick="resetPaper()">🔄 重做</button>
+    <button class="btn btn-outline" onclick="shufflePaper()">🔀 打乱顺序</button>
+    <button class="btn btn-primary" onclick="gradeCurrent()">✅ 提交</button>
+  </div>
+</div>
+
+<script>
+// ========================  DATA  ========================
+
+const papers = [
+  { // ===== Web测试（一） =====
+    title: "Web测试（一）",
+    sections: [
+      { type: "单选", scoreEach: 2, label: "一、单选题（共10题，每题2分，总分20）", questions: [
+        { stem: "&lt;a&gt;标签 target='_blank' 表示（）", opts: ["在当前窗口打开","在新窗口打开","在父窗口打开","在顶层窗口打开"], ans: 1 },
+        { stem: "以下哪个CSS属性可以设置盒子的圆角边框？", opts: ["border-style","border-radius","box-shadow","padding"], ans: 1 },
+        { stem: "以下关于块级盒子(block)的描述，错误的是（）", opts: ["盒子会产生换行","width和height属性有效","垂直方向的内边距、外边距无效","若不设置宽度，默认是父元素空间的100%"], ans: 2 },
+        { stem: "在网格布局中，要创建3列，每列宽度分别为100px、200px、100px，应使用以下哪个属性设置（）", opts: ["grid-template-columns: 100px 200px 100px;","grid-template-rows: 100px 200px 100px;","grid-column: 100px 200px 100px;","grid-row: 100px 200px 100px;"], ans: 0 },
+        { stem: "以下哪种方法<strong>不能</strong>解决嵌套块元素的外边距塌陷问题（）", opts: ["给父盒子添加上边框","给父盒子添加上内边距","给父盒子添加overflow: hidden属性","给子盒子添加float: left属性"], ans: 3 },
+        { stem: "网格布局中，minmax(100px, 1fr)的含义是？", opts: ["列宽固定为100px","列宽固定为1fr","列宽最小为100px，最大为1fr","列宽最小为1fr，最大为100px"], ans: 2 },
+        { stem: "JavaScript数组中，sort()方法的作用是（）", opts: ["过滤数组","遍历并返回新数组","求和","排序"], ans: 3 },
+        { stem: "以下关于块级盒子（block）的描述，错误的是？", opts: ["盒子会产生换行","width和height属性有效","垂直方向的内边距、外边距无效","若不设置宽度，默认是父元素空间的100%"], ans: 2 },
+        { stem: "CSS的全称是（）", opts: ["Colorful Style Sheets","Computer Style Sheets","Cascading Style Sheets","Creative Style Sheets"], ans: 2 },
+        { stem: "CSS3中，实现过渡效果的属性是（）", opts: ["transform","transition","animation","@keyframes"], ans: 1 },
+      ]},
+      { type: "填空", scoreEach: 1, label: "二、填空题（共8题，每题1分，总分8）", questions: [
+        { stem: "Vue 的事件绑定指令是____。", blanks: 1, ans: [["v-on"]] },
+        { stem: "将块级元素转换为行内块元素的CSS属性是____。", blanks: 1, ans: [["display:inline-block","display: inline-block"]] },
+        { stem: "CSS中，设置字体大小的属性是____，设置段落缩进的属性是____。", blanks: 2, ans: [["font-size"],["text-indent"]] },
+        { stem: "清除浮动常用属性____。", blanks: 1, ans: [["clearfix","clear","clear:both","clear both"]] },
+        { stem: "响应式布局中，常见的平板设备断点范围是____到____像素。", blanks: 2, ans: [["768"],["992"]] },
+        { stem: "CSS中，用于设置盒子内边距的属性是____，设置外边距的属性是____。", blanks: 2, ans: [["padding"],["margin"]] },
+        { stem: "弹性盒子布局中，____属性用于控制多行项目在交叉轴上的对齐方式，该属性生效的前提是项目____。", blanks: 2, ans: [["align-content"],["换行","wrap"]] },
+        { stem: "CSS动画效果的本质是设置____，可以使用____属性来调用动画。", blanks: 2, ans: [["@keyframes"],["animation"]] },
+      ]},
+      { type: "判断", scoreEach: 1, label: "三、判断题（共10题，每题1分，总分10）", questions: [
+        { stem: "transform:rotate 单位是 px。", ans: false },
+        { stem: "绝对定位的元素如果没有已定位的祖先元素，会相对于视口定位。", ans: true },
+        { stem: "flex-wrap:wrap 代表弹性盒子自动换行。", ans: true },
+        { stem: "弹性盒子子元素的flex属性优先级高于width属性。", ans: true },
+        { stem: "margin 属性可以设置盒子外边距。", ans: true },
+        { stem: "JavaScript 中 let 可以重复声明同一个变量。", ans: false },
+        { stem: "Vue 中绑定样式类可以通过 v-bind指令操作style属性来实现。", ans: true },
+        { stem: "JavaScript 中可以使用let关键字来声明常量。", ans: false },
+        { stem: "实现文字渐变时，需要将background-clip设置为text，并将text-fill-color设置为transparent。", ans: true },
+        { stem: "BOM允许程序和脚本动态地访问和更新文档的内容、结构和样式。", ans: false },
+      ]},
+    ]
+  },
+  { // ===== Web测试（二） =====
+    title: "Web测试（二）",
+    sections: [
+      { type: "单选", scoreEach: 2, label: "一、单选题（共10题，每题2分，总分20）", questions: [
+        { stem: "JavaScript数组中，push()的作用是()", opts: ["在开头添加元素","在末尾添加元素","删除末尾元素","删除开头元素"], ans: 1 },
+        { stem: "下列属于在父元素中的指定子节点之前添加一个新的子节点的是()", opts: ["appendChild()","removeChild()","replaceChild()","insertBefore()"], ans: 3 },
+        { stem: "以下哪一项<strong>不是</strong>字体图标的优势()", opts: ["矢量缩放，无损放大缩小","样式灵活，可通过CSS修改颜色、大小等","增加HTTP请求次数","兼容性好，支持多数浏览器"], ans: 2 },
+        { stem: "下列选项中，用于渲染DOM元素的文本内容的指令是()", opts: ["v-bind","v-text","v-on","v-for"], ans: 1 },
+        { stem: "CSS中，gap属性的作用是()", opts: ["设置透明度","使元素浮动","定位元素","设置间距"], ans: 3 },
+        { stem: "Vue 中实现数据双向绑定的是()", opts: ["v-bind","v-for","v-model","v-if"], ans: 2 },
+        { stem: "HTML中使用()标签设置文本域", opts: ["select","button","textarea","input"], ans: 2 },
+        { stem: "以下关于CSS相对定位的描述，正确的是（）", opts: ["元素脱离文档流","相对于最近的已定位祖先元素偏移","元素原位置仍被保留","常用于固定导航栏"], ans: 2 },
+        { stem: "已知数组 var arr =[1,2,3,4,5]; 执行arr.pop()后，数组长度是()", opts: ["4","5","6","7"], ans: 0 },
+        { stem: "弹性盒子布局中，默认情况下项目会如何排列()", opts: ["自动换行","不换行，压缩子盒子宽度","不换行，溢出容器","垂直排列"], ans: 1 },
+      ]},
+      { type: "填空", scoreEach: 1, label: "二、填空题（共8题，每题1分，总分8）", questions: [
+        { stem: "设置盒子上边框为1px、实线、粉色的CSS属性是______。", blanks: 1, ans: [["border-top:1px solid pink","border-top: 1px solid pink","border-top:1px solid pink;"]] },
+        { stem: "CSS盒模型由内容(content)、边框(border)、______和______四个部分组成。", blanks: 2, ans: [["padding","内边距"],["margin","外边距"]] },
+        { stem: "网格布局划分行列使用grid-template-columns和______属性。", blanks: 1, ans: [["grid-template-rows"]] },
+        { stem: "在弹性盒子布局中，要将主轴方向改为垂直方向，应设置容器的______属性为______。", blanks: 2, ans: [["flex-direction"],["column"]] },
+        { stem: "设置display的属性值为______表示定义弹性盒子布局，设置display的属性值为______表示定义网格布局。", blanks: 2, ans: [["flex"],["grid"]] },
+        { stem: "Vue 组件的API可以按两种不同的风格书写，分别是组合式和______。", blanks: 1, ans: [["选项式","选项式API","options api","Options API"]] },
+        { stem: "使用______属性可以提高盒子层级，实现悬浮效果。", blanks: 1, ans: [["z-index"]] },
+        { stem: "2D变换中使用______属性对元素进行移动、旋转、缩放、倾斜。", blanks: 1, ans: [["transform"]] },
+      ]},
+      { type: "判断", scoreEach: 1, label: "三、判断题（共10题，每题1分，总分10）", questions: [
+        { stem: "div 是行内元素，span 是块元素。", ans: false },
+        { stem: "JavaScript中的var关键字声明的变量具有函数作用域。", ans: true },
+        { stem: "unshift()方法用于在数组头部添加元素。", ans: true },
+        { stem: "媒体查询只能针对屏幕宽度设置不同样式。", ans: false },
+        { stem: "在默认盒子模型中，padding和border不会影响盒子的大小。", ans: false },
+        { stem: "text-align 属性不仅可以设置文本水平对齐，还可以设置垂直对齐。", ans: false },
+        { stem: "弹性盒子是一维布局，网格布局是二维布局。", ans: true },
+        { stem: "JavaScript 只能单独存放为.js 文件，不能嵌入 HTML 中。", ans: false },
+        { stem: "弹性盒子布局中，align-items属性用于控制项目在主轴上的对齐方式。", ans: false },
+        { stem: "过渡效果的transition属性应写在触发事件的样式中（如:hover）。", ans: false },
+      ]},
+    ]
+  },
+  { // ===== Web测试（三） =====
+    title: "Web测试（三）",
+    sections: [
+      { type: "单选", scoreEach: 2, label: "一、单选题（共10题，每题2分，总分20）", questions: [
+        { stem: "以下关于CSS相对定位的描述，正确的是（）", opts: ["元素脱离文档流","相对于最近的已定位祖先元素偏移","元素原位置仍被保留","常用于子盒子"], ans: 2 },
+        { stem: "弹性盒子布局中，默认情况下项目会如何排列？", opts: ["自动换行","不换行，压缩项目宽度","不换行，溢出容器","垂直排列"], ans: 1 },
+        { stem: "以下哪种CSS引入方式是内联样式（）", opts: ["&lt;style&gt;p{color:red}&lt;/style&gt;","&lt;link rel=\"stylesheet\" href=\"style.css\"&gt;","&lt;p style=\"color:red\"&gt;文字&lt;/p&gt;","@import \"style.css\""], ans: 2 },
+        { stem: "DOM中，修改元素HTML内容的属性是（）", opts: ["textContent","innerText","innerHTML","Content"], ans: 2 },
+        { stem: "以下哪种方法不能解决嵌套区块元素的外边距塌陷问题？", opts: ["给父盒子添加上边框","给父盒子添加上内边距","给父盒子添加overflow: hidden属性","给子盒子添加float: left属性"], ans: 3 },
+        { stem: "在弹性盒子布局中，若要让项目在主轴上均匀分布，且项目之间的间隔相等，而项目与容器边缘没有间隔，应设置justify-content的哪个属性值？", opts: ["space-between","space-around","space-evenly","center"], ans: 0 },
+        { stem: "设置段落首行缩进的属性是（）", opts: ["text-transform","text-align","text-indent","text-decoration"], ans: 2 },
+        { stem: "引用外部样式表的格式是（）", opts: ["&lt;style src=\"mystyle.css\"&gt;","&lt;link rel=\"stylesheet\" type=\"text/css\" href=\"mystyle.css\"&gt;","&lt;stylesheet&gt;mystyle.css&lt;/stylesheet&gt;","&lt;a href=\"style.css\"&gt;&lt;/a&gt;"], ans: 1 },
+        { stem: "关于块级元素与行内元素的正确的是（）", opts: ["块级元素不能设置宽高","行内元素默认独占一行","块级元素默认独占一行","行内元素可以包含块级元素"], ans: 2 },
+        { stem: "以下哪种 CSS 选择器优先级最高（）", opts: ["元素选择器","类选择器","ID 选择器","通配符选择器"], ans: 2 },
+      ]},
+      { type: "填空", scoreEach: 1, label: "二、填空题（共8题，每题1分，总分8）", questions: [
+        { stem: "在Flex布局中，使用____属性可以控制项目在交叉轴上的对齐方式，其值为'stretch'时，项目将被拉伸以填充整个交叉轴。", blanks: 1, ans: [["align-items"]] },
+        { stem: "网格布局中，使用____函数可以重复创建相同的列轨道，例如repeat(3, 100px)表示创建____列，每列宽度为100px。", blanks: 2, ans: [["repeat"],["3"]] },
+        { stem: "网格布局中，控制行和列之间间隙的简写属性是____。", blanks: 1, ans: [["gap"]] },
+        { stem: "JavaScript使用____方法弹出警示框。", blanks: 1, ans: [["alert"]] },
+        { stem: "justify-content属性用于设置弹性盒子的____。", blanks: 1, ans: [["主轴对齐方式","主轴对齐","main axis alignment"]] },
+        { stem: "实现单行文字溢出显示省略号，需要设置的三个CSS属性分别是______、______、______。", blanks: 3, ans: [["white-space:nowrap","white-space: nowrap"],["overflow:hidden","overflow: hidden"],["text-overflow:ellipsis","text-overflow: ellipsis"]] },
+        { stem: "若要让盒子的width和height包含padding和border，应设置CSS属性______为______。", blanks: 2, ans: [["box-sizing"],["border-box"]] },
+        { stem: "在使用position属性进行定位布局时，通常按照「子绝父相」原则，使用______属性值设置子盒子为绝对定位，使用______属性值设置父盒子为相对定位。", blanks: 2, ans: [["absolute"],["relative"]] },
+      ]},
+      { type: "判断", scoreEach: 1, label: "三、判断题（共10题，每题1分，总分10）", questions: [
+        { stem: "Vue 是一套构建用户界面的渐进式框架，Vue 的核心只关注视图层。", ans: true },
+        { stem: "null 和 undefined 含义完全相同。", ans: false },
+        { stem: "HTML中的&lt;video&gt;和&lt;audio&gt;元素用于在网页上嵌入视频和音频内容。", ans: true },
+        { stem: "网格布局的gap属性用于设置子元素的内边距。", ans: false },
+        { stem: "document对象即属于BOM，又属于DOM。", ans: true },
+        { stem: "并列关系的两个区块元素，上下外边距会合并为一个，取较大值。", ans: true },
+        { stem: "grid-template-columns属性用于定义网格的行轨道。", ans: false },
+        { stem: "CSS3 动画必须使用 @keyframes 定义关键帧才能播放。", ans: true },
+        { stem: "HTML用于设置网页结构， CSS用于设置网页样式。", ans: true },
+        { stem: "设置display: grid的容器，其子元素默认会水平排列成多列。", ans: false },
+      ]},
+    ]
+  }
+];
+
+// ========================  BUILD COMBINED PAPER  ========================
+(function buildCombined() {
+  const sources = ["Web测试（一）", "Web测试（二）", "Web测试（三）"];
+  const combined = { title: "综合测试（三套整合）", sections: [] };
+  const secTypes = ["单选", "填空", "判断"];
+  secTypes.forEach(type => {
+    const merged = [];
+    papers.forEach((p, pi) => {
+      const sec = p.sections.find(s => s.type === type);
+      if (sec) {
+        sec.questions.forEach(q => {
+          merged.push({ ...q, source: sources[pi] });
+        });
+      }
+    });
+    combined.sections.push({
+      type: type,
+      scoreEach: type === "单选" ? 2 : 1,
+      label: (type === "单选" ? "一" : type === "填空" ? "二" : "三") + "、" + type + "题（共" + merged.length + "题）",
+      questions: merged
+    });
+  });
+  papers.push(combined);
+})();
+
+// ========================  GLOBALS  ========================
+let currentPaper = 0;
+let shuffleMap = {};  // { paperIdx: [{si, qi}, ...] } — null/absent = original order
+
+// ========================  RENDER  ========================
+
+function renderAll() {
+  const container = document.getElementById('papersContainer');
+  container.innerHTML = papers.map((_, pi) => renderPaper(pi)).join('');
+}
+
+function renderPaper(pi) {
+  const paper = papers[pi];
+  let qGlobal = 0;
+  const order = shuffleMap[pi]; // [{si, qi}, ...] per section if shuffled
+
+  return `<div class="paper${pi === 0 ? ' active' : ''}" id="paper${pi}">
+    ${paper.sections.map((sec, si) => {
+      // Determine display order for this section
+      let indices;
+      if (order) {
+        indices = order.filter(o => o.si === si);
+      } else {
+        indices = sec.questions.map((_, qi) => ({ si, qi }));
+      }
+      return `
+        <div class="section-title">
+          <span class="badge">${sec.type}题</span> ${sec.label}
+        </div>
+        ${indices.map(({ qi }) => {
+          const q = sec.questions[qi];
+          qGlobal++;
+          const qid = `p${pi}_s${si}_q${qi}`;
+          if (sec.type === '单选') {
+            return renderChoice(qid, qGlobal, q, pi, si, qi);
+          } else if (sec.type === '判断') {
+            return renderTF(qid, qGlobal, q, pi, si, qi);
+          } else {
+            return renderFill(qid, qGlobal, q, pi, si, qi);
+          }
+        }).join('')}
+      `;
+    }).join('')}
+  </div>`;
+}
+
+function renderChoice(qid, qGlobal, q, pi, si, qi) {
+  const srcTag = q.source ? `<span class="q-source">${q.source}</span>` : '';
+  return `<div class="q-card" id="card_${qid}" data-paper="${pi}" data-section="${si}" data-q="${qi}" data-type="choice">
+    <div class="q-stem"><span class="q-num">${qGlobal}</span><span>${q.stem}${srcTag}</span></div>
+    <div class="options">
+      ${q.opts.map((opt, oi) => `
+        <label class="opt-label" id="opt_${qid}_${oi}">
+          <input type="radio" name="${qid}" value="${oi}">
+          <span>${'ABCD'[oi]}. ${opt}</span>
+        </label>
+      `).join('')}
+    </div>
+    <div class="feedback" id="fb_${qid}"></div>
+  </div>`;
+}
+
+function renderTF(qid, qGlobal, q, pi, si, qi) {
+  const srcTag = q.source ? `<span class="q-source">${q.source}</span>` : '';
+  return `<div class="q-card" id="card_${qid}" data-paper="${pi}" data-section="${si}" data-q="${qi}" data-type="tf">
+    <div class="q-stem"><span class="q-num">${qGlobal}</span><span>${q.stem}${srcTag}</span></div>
+    <div class="options">
+      <label class="opt-label" id="opt_${qid}_0">
+        <input type="radio" name="${qid}" value="true"> <span>A. 对</span>
+      </label>
+      <label class="opt-label" id="opt_${qid}_1">
+        <input type="radio" name="${qid}" value="false"> <span>B. 错</span>
+      </label>
+    </div>
+    <div class="feedback" id="fb_${qid}"></div>
+  </div>`;
+}
+
+function renderFill(qid, qGlobal, q, pi, si, qi) {
+  // Normalize: ____1____ → ____, ______ → ____
+  let stem = q.stem.replace(/____\d+____/g, '____').replace(/______/g, '____');
+  let blankIdx = 0;
+  const stemWithInputs = stem.replace(/____/g, () => {
+    const b = blankIdx++;
+    return `<input type="text" class="fill-input" id="fill_${qid}_${b}" data-blank="${b}" placeholder="______">`;
+  });
+  const srcTag = q.source ? `<span class="q-source">${q.source}</span>` : '';
+  return `<div class="q-card" id="card_${qid}" data-paper="${pi}" data-section="${si}" data-q="${qi}" data-type="fill">
+    <div class="q-stem"><span class="q-num">${qGlobal}</span><span>${stemWithInputs}${srcTag}</span></div>
+    <div class="feedback" id="fb_${qid}"></div>
+  </div>`;
+}
+
+// ========================  GRADING  ========================
+
+function gradeCurrent() {
+  const paper = papers[currentPaper];
+  let totalScore = 0;
+  let earnedScore = 0;
+
+  paper.sections.forEach((sec, si) => {
+    sec.questions.forEach((q, qi) => {
+      const qid = `p${currentPaper}_s${si}_q${qi}`;
+      const card = document.getElementById(`card_${qid}`);
+      const fb = document.getElementById(`fb_${qid}`);
+      if (!card || !fb) return;
+
+      totalScore += sec.scoreEach;
+      let isCorrect = false;
+      let correctDisplay = '';
+
+      if (sec.type === '单选') {
+        const selected = document.querySelector(`input[name="${qid}"]:checked`);
+        if (selected && parseInt(selected.value) === q.ans) {
+          isCorrect = true;
+          earnedScore += sec.scoreEach;
+        }
+        correctDisplay = 'ABCD'[q.ans] + '. ' + q.opts[q.ans];
+        // Highlight chosen & real answer
+        q.opts.forEach((_, oi) => {
+          const lbl = document.getElementById(`opt_${qid}_${oi}`);
+          if (lbl) lbl.classList.remove('chosen-correct','chosen-wrong','real-answer');
+        });
+        if (selected) {
+          const selLbl = document.getElementById(`opt_${qid}_${selected.value}`);
+          if (selLbl) selLbl.classList.add(isCorrect ? 'chosen-correct' : 'chosen-wrong');
+        }
+        if (!isCorrect) {
+          const realLbl = document.getElementById(`opt_${qid}_${q.ans}`);
+          if (realLbl) realLbl.classList.add('real-answer');
+        }
+      } else if (sec.type === '判断') {
+        const selected = document.querySelector(`input[name="${qid}"]:checked`);
+        const userVal = selected ? (selected.value === 'true') : null;
+        if (userVal === q.ans) {
+          isCorrect = true;
+          earnedScore += sec.scoreEach;
+        }
+        correctDisplay = q.ans ? 'A. 对' : 'B. 错';
+        ['0','1'].forEach(vi => {
+          const lbl = document.getElementById(`opt_${qid}_${vi}`);
+          if (lbl) lbl.classList.remove('chosen-correct','chosen-wrong','real-answer');
+        });
+        if (selected) {
+          const selLbl = document.getElementById(`opt_${qid}_${selected.value === 'true' ? '0' : '1'}`);
+          if (selLbl) selLbl.classList.add(isCorrect ? 'chosen-correct' : 'chosen-wrong');
+        }
+        if (!isCorrect) {
+          const realLbl = document.getElementById(`opt_${qid}_${q.ans ? '0' : '1'}`);
+          if (realLbl) realLbl.classList.add('real-answer');
+        }
+      } else if (sec.type === '填空') {
+        // Check each blank
+        let allBlanksCorrect = true;
+        const correctParts = [];
+        for (let b = 0; b < q.blanks; b++) {
+          const input = document.getElementById(`fill_${qid}_${b}`);
+          const accepted = q.ans[b] || [];
+          const userAnswer = input ? input.value.trim() : '';
+          const blankCorrect = accepted.some(a => userAnswer.toLowerCase() === a.toLowerCase());
+          if (!blankCorrect) allBlanksCorrect = false;
+          if (input) {
+            input.classList.remove('input-correct','input-wrong');
+            input.classList.add(blankCorrect ? 'input-correct' : 'input-wrong');
+          }
+          correctParts.push(accepted[0]); // show first accepted answer
+        }
+        if (allBlanksCorrect) {
+          isCorrect = true;
+          earnedScore += sec.scoreEach;
+        }
+        correctDisplay = correctParts.join('、');
+      }
+
+      // Update card & feedback
+      card.classList.remove('correct','wrong','checked');
+      card.classList.add('checked', isCorrect ? 'correct' : 'wrong');
+      if (isCorrect) {
+        fb.innerHTML = '✅ 回答正确！';
+        fb.className = 'feedback correct-msg';
+      } else {
+        fb.innerHTML = `❌ 回答错误，正确答案：<span class="correct-answer-text">${correctDisplay}</span>`;
+        fb.className = 'feedback wrong-msg';
+      }
+    });
+  });
+
+  // Show score
+  document.getElementById('scoreText').style.display = 'block';
+  document.getElementById('scoreHint').style.display = 'none';
+  document.getElementById('scoreNum').textContent = earnedScore;
+  document.getElementById('scoreTotal').textContent = totalScore;
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ========================  RESET  ========================
+
+function resetPaper() {
+  // Clear shuffle
+  delete shuffleMap[currentPaper];
+  // Re-render to restore original order & clear inputs
+  const container = document.getElementById('papersContainer');
+  const paperDiv = document.getElementById(`paper${currentPaper}`);
+  if (paperDiv) {
+    paperDiv.outerHTML = renderPaper(currentPaper);
+  }
+  // Hide score
+  document.getElementById('scoreText').style.display = 'none';
+  document.getElementById('scoreHint').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ========================  SHUFFLE  ========================
+
+function shufflePaper() {
+  const paper = papers[currentPaper];
+  const order = [];
+  paper.sections.forEach((sec, si) => {
+    // Create array of indices for this section
+    const indices = sec.questions.map((_, qi) => ({ si, qi }));
+    // Fisher-Yates shuffle
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    order.push(...indices);
+  });
+  shuffleMap[currentPaper] = order;
+  // Re-render
+  const paperDiv = document.getElementById(`paper${currentPaper}`);
+  if (paperDiv) {
+    paperDiv.outerHTML = renderPaper(currentPaper);
+  }
+  // Hide score
+  document.getElementById('scoreText').style.display = 'none';
+  document.getElementById('scoreHint').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ========================  TAB SWITCH  ========================
+
+function switchPaper(idx) {
+  currentPaper = idx;
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+  document.querySelectorAll('.paper').forEach((p, i) => p.classList.toggle('active', i === idx));
+  // Hide score when switching
+  document.getElementById('scoreText').style.display = 'none';
+  document.getElementById('scoreHint').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ========================  INIT  ========================
+
+renderAll();
+</script>
+
+</body>
+</html>
