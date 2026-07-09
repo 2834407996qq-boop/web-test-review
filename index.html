@@ -900,6 +900,8 @@ function switchSubject(subj) {
   renderSubjectBar();
   renderTabBar();
   renderContainer();
+  // Activate first paper of this subject
+  switchPaper(0);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
