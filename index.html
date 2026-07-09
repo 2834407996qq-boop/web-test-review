@@ -719,14 +719,7 @@ function renderPaper(pi) {
           const q = sec.questions[qi];
           qGlobal++;
           const qid = `p${pi}_s${si}_q${qi}`;
-          if (sec.type === '简答') {
-        // Short answer: self-grade, show reference
-        card.classList.add('checked');
-        fb.innerHTML = '<div class="exp-box">📝 <strong>参考答案：</strong>' + (q.exp || '暂无') + '</div>';
-        fb.className = 'feedback';
-        fb.style.display = 'block';
-        // Don't count in score (self-grade)
-      } else if (sec.type === '单选') {
+          if (sec.type === '单选') {
             return renderChoice(qid, qGlobal, q, pi, si, qi);
           } else if (sec.type === '判断') {
             return renderTF(qid, qGlobal, q, pi, si, qi);
@@ -807,7 +800,14 @@ function gradeCurrent() {
       let isCorrect = false;
       let correctDisplay = '';
 
-      if (sec.type === '单选') {
+      if (sec.type === '简答') {
+        // Short answer: self-grade, show reference
+        isCorrect = true; // neutral, not graded
+        card.classList.add('checked');
+        fb.innerHTML = '<div class="exp-box">📝 <strong>参考答案：</strong>' + (q.exp || '暂无') + '</div>';
+        fb.className = 'feedback';
+        fb.style.display = 'block';
+      } else if (sec.type === '单选') {
         const selected = document.querySelector(`input[name="${qid}"]:checked`);
         if (selected && parseInt(selected.value) === q.ans) {
           isCorrect = true;
