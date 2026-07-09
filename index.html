@@ -811,9 +811,6 @@ function gradeCurrent() {
       }
 
       if (sec.type === '单选') {
-        fb.className = 'feedback';
-        fb.style.display = 'block';
-      } else if (sec.type === '单选') {
         const selected = document.querySelector(`input[name="${qid}"]:checked`);
         if (selected && parseInt(selected.value) === q.ans) {
           isCorrect = true;
