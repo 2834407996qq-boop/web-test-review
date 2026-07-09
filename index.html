@@ -287,6 +287,7 @@
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <button class="btn btn-outline" onclick="resetPaper()">🔄 重做</button>
     <button class="btn btn-outline" onclick="shufflePaper()">🔀 打乱顺序</button>
+    <button class="btn btn-outline" id="btnWrong" onclick="scrollToWrong()" style="display:none">📍 定位错题</button>
     <button class="btn btn-primary" onclick="gradeCurrent()">✅ 提交</button>
   </div>
 </div>
@@ -527,6 +528,8 @@ const papers = [
 // ========================  GLOBALS  ========================
 let currentPaper = 0;
 let shuffleMap = {};  // { paperIdx: [{si, qi}, ...] } — null/absent = original order
+let wrongCards = [];  // list of card element IDs that were wrong
+let wrongIdx = 0;     // current index for scroll-to-wrong navigation
 
 // ========================  RENDER  ========================
 
@@ -711,6 +714,8 @@ function gradeCurrent() {
       if (q.exp) {
         fb.innerHTML += `<div class="exp-box">💡 ${q.exp}</div>`;
       }
+      // Collect wrong cards
+      if (!isCorrect) wrongCards.push(`card_${qid}`);
     });
   });
 
@@ -720,8 +725,35 @@ function gradeCurrent() {
   document.getElementById('scoreNum').textContent = earnedScore;
   document.getElementById('scoreTotal').textContent = totalScore;
 
+  // Show/hide wrong-nav button
+  wrongIdx = 0;
+  const btnW = document.getElementById('btnWrong');
+  if (wrongCards.length > 0) {
+    btnW.style.display = '';
+    btnW.textContent = `📍 定位错题 (1/${wrongCards.length})`;
+  } else {
+    btnW.style.display = 'none';
+  }
+
   // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ========================  SCROLL TO WRONG  ========================
+
+function scrollToWrong() {
+  if (wrongCards.length === 0) return;
+  const id = wrongCards[wrongIdx];
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Highlight pulse
+    el.style.boxShadow = '0 0 0 4px #f59e0b';
+    setTimeout(() => { el.style.boxShadow = ''; }, 1500);
+  }
+  // Advance with wrap-around
+  wrongIdx = (wrongIdx + 1) % wrongCards.length;
+  document.getElementById('btnWrong').textContent = `📍 下一错题 (${wrongIdx + 1}/${wrongCards.length})`;
 }
 
 // ========================  RESET  ========================
@@ -729,6 +761,10 @@ function gradeCurrent() {
 function resetPaper() {
   // Clear shuffle
   delete shuffleMap[currentPaper];
+  // Clear wrong cards
+  wrongCards = [];
+  wrongIdx = 0;
+  document.getElementById('btnWrong').style.display = 'none';
   // Re-render to restore original order & clear inputs
   const container = document.getElementById('papersContainer');
   const paperDiv = document.getElementById(`paper${currentPaper}`);
