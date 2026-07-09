@@ -1008,7 +1008,14 @@ function switchPaper(idx) {
 
 // ========================  INIT  ========================
 
-renderAll();
+window.onerror = function(msg, url, line) {
+  document.body.innerHTML = '<div style="padding:30px;color:red;font-family:monospace"><h2>JS Error</h2><pre>' + msg + '</pre><p>Line: ' + line + '</p></div>' + document.body.innerHTML;
+};
+try {
+  renderAll();
+} catch(e) {
+  document.body.innerHTML = '<div style="padding:30px;color:red"><h2>渲染错误</h2><pre>' + e.message + '</pre><pre>' + (e.stack||'') + '</pre></div>' + document.body.innerHTML;
+}
 
 </script>
 </body>
